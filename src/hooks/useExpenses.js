@@ -51,8 +51,7 @@ export function useExpenses(userId) {
 
     const q = query(
       collection(db, 'expenses'),
-      where('userId', '==', userId),
-      orderBy('date', 'desc')
+      where('userId', '==', userId)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -60,6 +59,8 @@ export function useExpenses(userId) {
         id: doc.id,
         ...doc.data()
       }));
+      // Sort in JavaScript instead of Firestore to avoid index requirement
+      expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
       setAllExpenses(expenses);
       setLoading(false);
     }, (error) => {
